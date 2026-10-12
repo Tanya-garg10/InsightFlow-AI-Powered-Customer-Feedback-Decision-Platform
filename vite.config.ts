@@ -1,6 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
@@ -8,7 +7,13 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': new URL('.', import.meta.url).pathname,
+      },
+    },
+    build: {
+      // Disable Rolldown to avoid react-is resolution issues
+      rollupOptions: {
+        external: ['react-is'],
       },
     },
     server: {
