@@ -1,0 +1,8 @@
+{
+  "name": "InsightFlow — Intelligent Customer Feedback & Decision Platform",
+  "description": "AI-Powered Customer Feedback & Decision Platform for Frontend Arena Build Battle 2026 with real dataset processing, Adaption analysis validation, transparent heuristic prioritization, and SQLite-persisted issue tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

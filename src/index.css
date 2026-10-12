@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+/* ─── InsightFlow Design Tokens ───────────────────────────────────────── */
+:root {
+  /* Brand */
+  --if-bg:        #FAF9FF;
+  --if-violet:    #7357F6;
+  --if-blue:      #477DFF;
+  --if-lavender:  #EEE9FF;
+  --if-mint:      #BDF4DD;
+  --if-peach:     #FFE0D2;
+  --if-coral:     #FF6B6B;
+  --if-amber:     #F59E0B;
+
+  /* Text */
+  --if-text:      #25243A;
+  --if-muted:     #77758F;
+  --if-subtle:    #A8A6BF;
+
+  /* Surfaces */
+  --if-surface:   #FFFFFF;
+  --if-surface2:  #F5F4FC;
+  --if-border:    rgba(115, 87, 246, 0.12);
+  --if-border-sm: rgba(0, 0, 0, 0.06);
+
+  /* Gradients */
+  --if-grad-hero:    linear-gradient(135deg, #7357F6 0%, #477DFF 100%);
+  --if-grad-subtle:  linear-gradient(135deg, #EEE9FF 0%, #E8F0FF 100%);
+  --if-grad-mint:    linear-gradient(135deg, #BDF4DD 0%, #D1FAE5 100%);
+  --if-grad-peach:   linear-gradient(135deg, #FFE0D2 0%, #FEF3C7 100%);
+
+  /* Shadows */
+  --if-shadow-xs:  0 1px 2px rgba(115, 87, 246, 0.06);
+  --if-shadow-sm:  0 2px 8px rgba(115, 87, 246, 0.10);
+  --if-shadow-md:  0 4px 20px rgba(115, 87, 246, 0.14);
+  --if-shadow-lg:  0 8px 32px rgba(115, 87, 246, 0.18);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    font-size: 14px;
+  }
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--if-bg);
+    color: var(--if-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  code, pre {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  ::selection {
+    background: #EEE9FF;
+    color: #7357F6;
+  }
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(115,87,246,0.25); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(115,87,246,0.45); }
+}
+
+/* ─── Utility Classes ────────────────────────────────────────────────── */
+@layer utilities {
+  /* Gradient text */
+  .text-gradient {
+    background: var(--if-grad-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glass card */
+  .glass {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.55);
+  }
+
+  /* Card base */
+  .if-card {
+    background: var(--if-surface);
+    border: 1px solid var(--if-border-sm);
+    border-radius: 16px;
+    box-shadow: var(--if-shadow-xs);
+  }
+  .if-card-hover {
+    background: var(--if-surface);
+    border: 1px solid var(--if-border-sm);
+    border-radius: 16px;
+    box-shadow: var(--if-shadow-xs);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .if-card-hover:hover {
+    box-shadow: var(--if-shadow-md);
+    border-color: rgba(115,87,246,0.2);
+    transform: translateY(-1px);
+  }
+
+  /* Sentiment chip */
+  .chip-positive  { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+  .chip-negative  { background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+  .chip-neutral   { background: #F8F9FF; color: #77758F; border: 1px solid #E2E0EF; }
+  .chip-mixed     { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+
+  /* Severity chip */
+  .sev-high   { background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+  .sev-medium { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+  .sev-low    { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+  .sev-unknown { background: #F8F9FF; color: #77758F; border: 1px solid #E2E0EF; }
+
+  /* Category badge colors */
+  .cat-product   { background: #EEE9FF; color: #7357F6; border: 1px solid rgba(115,87,246,0.2); }
+  .cat-service   { background: #EFF6FF; color: #477DFF; border: 1px solid rgba(71,125,255,0.2); }
+  .cat-ops       { background: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; }
+  .cat-fraud     { background: #FFF1F2; color: #E11D48; border: 1px solid #FECDD3; }
+  .cat-default   { background: #F8F9FF; color: #77758F; border: 1px solid #E2E0EF; }
+
+  /* Nav active pulse dot */
+  .nav-active-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--if-violet);
+  }
+
+  /* Score bar */
+  .score-bar {
+    height: 6px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #7357F6, #477DFF);
+  }
+
+  /* Flowing line motif (decorative) */
+  .motif-line {
+    position: relative;
+    overflow: hidden;
+  }
+  .motif-line::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(115,87,246,0.3), transparent);
+  }
+}
+
+/* ─── Animation ─────────────────────────────────────────────────────── */
+@layer utilities {
+  .fade-up {
+    animation: fadeUp 0.35s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.25s ease both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .scale-in {
+    animation: scaleIn 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  /* Shimmer for skeleton */
+  .shimmer {
+    background: linear-gradient(90deg, #F0EEF9 25%, #E8E5F5 50%, #F0EEF9 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.6s ease infinite;
+  }
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up, .fade-in, .scale-in, .shimmer { animation: none !important; }
+    .if-card-hover:hover { transform: none; }
+  }
+}
+
+/* ─── Print ──────────────────────────────────────────────────────────── */
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: white !important; color: black !important; }
+  .if-card, .if-card-hover { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+}
