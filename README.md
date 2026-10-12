@@ -3,8 +3,6 @@
 > Built for **Frontend Arena Build Battle 2026**  
 > AI-powered customer feedback intelligence platform that bridges raw reviews, Adaption dataset optimization, and decision-ready action tracking.
 
----
-
 ## 🌟 Overview & Architecture
 
 InsightFlow is an end-to-end customer feedback analysis and decision platform. It takes raw feedback datasets and integrates structured fine-tuned analysis from **Adaption** generated completions.
@@ -41,16 +39,12 @@ The `enhanced_completion` column contains JSON wrapped in markdown code fences (
 5. **Fraud Honesty**: Customer allegations of fraud are labeled as *unverified customer allegations*, never confirmed incidents.
 6. **Adaption Coverage Disclosure**: The 113 adapted rows cover ~1.6% of the 7,000 original records. Dashboard clearly notes which records use adapted analysis vs. baseline heuristic.
 
----
-
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19, TypeScript, Vite 8, Tailwind CSS v4, Recharts, Lucide Icons, Motion
 - **Full-Stack Runtime**: Node.js + Express serving Vite dev middleware on port 3000, with REST API and persistent JSON store
 - **Data format**: In-memory store persisted to `data/insightflow_db.json` (gitignored)
 - **Python Backend** (optional): FastAPI, Pandas, SQLAlchemy (SQLite), Pydantic, Pytest
-
----
 
 ## 🚀 Running the Project
 
@@ -107,8 +101,6 @@ python3 -m pytest backend/test_main.py -v
 npm run lint
 ```
 
----
-
 ## 📁 Dataset & Adaption Workflow
 
 ### CSV File Naming
@@ -151,8 +143,6 @@ The `enhanced_completion` field may contain:
 - Empty values (counted as parse errors)
 - CSV double-quote encoded JSON (e.g., `""sentiment""` → `"sentiment"`)
 
----
-
 ## 🔌 REST API Reference
 
 | Method | Endpoint | Description |
@@ -173,8 +163,6 @@ The `enhanced_completion` field may contain:
 | GET | `/api/adaption/lab` | Detailed parsing stats for Adaption Lab |
 | GET | `/api/reports/export` | Export data (format: csv / json / json_adapted) |
 | POST | `/api/demo/reset` | Reset to initial default dataset state |
-
----
 
 ## 📊 Application Features
 
@@ -202,8 +190,6 @@ CSV export (full feedback), JSON export (full report), adapted-only JSON export,
 ### Adaption Lab
 Three tabs — **Category Overview** (chart + distribution table + coverage disclaimer), **Example Analyses** (side-by-side inspector), **Errors** (parse errors + missing fields).
 
----
-
 ## 🔒 Known Limitations & Ethical Guidelines
 
 - **Fraud Allegations vs. Fact**: All fraud/scam allegations are labeled *unverified customer allegations*. They require formal investigation before legal attribution.
@@ -212,8 +198,6 @@ Three tabs — **Category Overview** (chart + distribution table + coverage disc
 - **Baseline Heuristic Transparency**: The local sentiment heuristic uses keyword matching — documented in `server.ts → runTransparentBaseline()`. It is not a trained ML model.
 - **Status Clarification**: Marking an issue "Resolved" reflects team action taken — not verified customer sentiment resolution.
 - **No Fabricated Metrics**: No accuracy percentages, revenue figures, or model improvement claims are made. All statistics are directly computed from uploaded data.
-
----
 
 ## 🏗️ Project Structure
 
@@ -258,8 +242,6 @@ InsightFlow/
 └── .gitignore
 ```
 
----
-
 ## 🚀 Deployment
 
 ### Quick deploy to any Node.js host (Render, Railway, Fly.io)
@@ -288,7 +270,5 @@ CMD ["npx", "tsx", "server.ts"]
 ```
 
 The `data/` directory with CSV files must be present in the container for automatic initialization.
-
----
 
 *InsightFlow — Frontend Arena Build Battle 2026. Built with transparency, honesty, and real data.*
