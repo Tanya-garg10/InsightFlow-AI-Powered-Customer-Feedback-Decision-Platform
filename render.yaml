@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: insightflow
+    env: node
+    plan: free
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npx tsx server.ts
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production

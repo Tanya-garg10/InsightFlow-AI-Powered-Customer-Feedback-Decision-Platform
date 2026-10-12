@@ -1,0 +1,7 @@
+node_modules
+dist
+.git
+.gitignore
+.env
+*.log
+data/insightflow_db.json
