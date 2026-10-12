@@ -314,10 +314,8 @@ function initializeDefaultDatasets() {
     ? path.join(DATA_DIR, 'ORIGINAL DATASET.csv')
     : path.join(DATA_DIR, 'BuildBattle_2026_Customer_Feedback_Dataset.csv');
 
-  // Prefer the Adaption_Adapted file, fall back to customer_feedback_prompts
-  const adaptedPath = fs.existsSync(path.join(DATA_DIR, 'Adaption_Adapted_Feedback_Dataset.csv'))
-    ? path.join(DATA_DIR, 'Adaption_Adapted_Feedback_Dataset.csv')
-    : path.join(DATA_DIR, 'customer_feedback_prompts.csv');
+  // Use the Adaption_Adapted file
+  const adaptedPath = path.join(DATA_DIR, 'Adaption_Adapted_Feedback_Dataset.csv');
 
   let adaptedMap = new Map<string, any>();
   let adaptedValidJsonCount = 0;

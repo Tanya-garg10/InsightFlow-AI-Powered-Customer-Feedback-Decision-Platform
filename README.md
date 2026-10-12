@@ -13,7 +13,7 @@ InsightFlow is an end-to-end customer feedback analysis and decision platform. I
 |------|------|---------|
 | `data/ORIGINAL DATASET.csv` | 7,000 | `review`, `category` |
 | `data/Adaption_Adapted_Feedback_Dataset.csv` | 113 | `review`, `enhanced_prompt`, `enhanced_completion`, `category`, `original_context` |
-| `data/customer_feedback_prompts.csv` | 113 | Same as above (used as fallback) |
+
 
 Original categories: `Product Feedback`, `Customer Service`, `Operational Issues`, `Fraud and Scam`
 
@@ -110,7 +110,7 @@ The server supports the following filenames automatically, in priority order:
 | Role | Primary filename | Fallback filename |
 |------|-----------------|-------------------|
 | Original dataset | `ORIGINAL DATASET.csv` | `BuildBattle_2026_Customer_Feedback_Dataset.csv` |
-| Adapted dataset | `Adaption_Adapted_Feedback_Dataset.csv` | `customer_feedback_prompts.csv` |
+| Adapted dataset | `Adaption_Adapted_Feedback_Dataset.csv` |
 
 ### Adaption Lab Workflow
 
