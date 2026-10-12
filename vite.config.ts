@@ -12,9 +12,7 @@ export default defineConfig(() => {
     },
     build: {
       // Disable Rolldown to avoid react-is resolution issues
-      rollupOptions: {
-        external: ['react-is'],
-      },
+      bundler: 'rollup',
     },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
