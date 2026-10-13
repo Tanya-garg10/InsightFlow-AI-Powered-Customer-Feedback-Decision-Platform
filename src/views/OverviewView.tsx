@@ -14,15 +14,16 @@ import {
 import {
   FileText,
   CopyCheck,
-  Tag,
   AlertTriangle,
   Lightbulb,
   ArrowRight,
+  Sparkles,
   TrendingUp,
-  ShieldAlert,
-  Sparkles
+  MessageSquare,
+  CheckCircle
 } from 'lucide-react';
 import { OverviewAnalytics, IssueItem, FeedbackItem } from '../types';
+import { Card, GradientPanel, Badge, CategoryBadge, SentimentBadge, SeverityBadge } from '../components/ui';
 
 interface OverviewViewProps {
   analytics: OverviewAnalytics | null;
@@ -33,11 +34,18 @@ interface OverviewViewProps {
 }
 
 const SENTIMENT_COLORS: Record<string, string> = {
-  positive: '#10B981', // emerald-500
-  negative: '#F43F5E', // rose-500
-  neutral: '#64748B',  // slate-500
-  mixed: '#F59E0B',    // amber-500
-  unassigned: '#94A3B8'
+  positive: '#10B981',
+  negative: '#E11D48',
+  neutral: '#77758F',
+  mixed: '#D97706',
+  unassigned: '#A8A6BF'
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'Product Feedback': '#7357F6',
+  'Customer Service': '#477DFF',
+  'Operational Issues': '#059669',
+  'Fraud and Scam': '#E11D48'
 };
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -50,11 +58,11 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   if (!analytics || analytics.total_records === 0) {
     return (
       <div className="p-8 max-w-5xl mx-auto text-center py-24">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mx-auto mb-4">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7357F6]/10 to-[#477DFF]/10 border border-[rgba(115,87,246,0.12)] flex items-center justify-center text-[#7357F6] mx-auto mb-4">
           <Sparkles className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mb-2">No Analyzed Records Available</h2>
-        <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+        <h2 className="text-xl font-bold text-[#25243A] mb-2">No Analyzed Records Available</h2>
+        <p className="text-sm text-[#77758F] max-w-md mx-auto mb-6">
           Upload customer feedback CSV or run the baseline analysis pipeline to view real metric distributions.
         </p>
       </div>
@@ -75,112 +83,155 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   } = analytics;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-150">
+    <div className="p-8 max-w-7xl mx-auto space-y-8 fade-up">
       {/* Page Title & Context */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Overview Dashboard</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Dynamic statistics computed from customer feedback records. Inferences marked transparently.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-[#25243A] tracking-tight">Overview Dashboard</h1>
+          <p className="text-sm text-[#77758F] mt-2 max-w-xl">
+            Dynamic statistics computed from customer feedback records. Inferences marked transparently.
+          </p>
+        </div>
+        <div className="hidden md:flex items-center gap-2 text-xs text-[#77758F]">
+          <CheckCircle className="w-4 h-4 text-[#059669]" />
+          <span>Analysis complete</span>
+        </div>
       </div>
 
-      {/* 4 Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Feedback</span>
-            <FileText className="w-4 h-4 text-slate-400" />
+      {/* Hero Insight Panel */}
+      <GradientPanel variant="hero" className="p-8 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-5 h-5" />
+            <span className="text-xs font-medium uppercase tracking-wider text-white/80">AI-Generated Insight</span>
           </div>
-          <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">{total_records}</div>
-          <div className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-            <span>{unique_reviews} distinct reviews</span>
-            <span aria-hidden="true">·</span>
-            <span className="text-slate-400">{duplicate_records_count} duplicates</span>
+          <h2 className="text-2xl font-bold mb-3">Every customer signal has a story.</h2>
+          <p className="text-white/90 text-sm max-w-2xl mb-4 leading-relaxed">
+            {total_records} feedback records analyzed with {sentiment_distribution.find(s => s.sentiment === 'positive')?.percentage || 0}% positive sentiment. 
+            Top recurring patterns indicate opportunities in product quality and customer service responsiveness.
+          </p>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onNavigateToFeedback}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-[#7357F6] rounded-lg text-sm font-medium hover:bg-white/90 transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              <span>Explore Feedback</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-2 text-xs text-white/70">
+              <span className="w-2 h-2 rounded-full bg-white/50" />
+              <span>Based on {unique_reviews} unique reviews</span>
+            </div>
           </div>
         </div>
+      </GradientPanel>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Unique Combos</span>
-            <CopyCheck className="w-4 h-4 text-slate-400" />
+      {/* Asymmetrical Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <Card className="p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#EEE9FF] flex items-center justify-center">
+              <FileText className="w-5 h-5 text-[#7357F6]" />
+            </div>
+            <TrendingUp className="w-4 h-4 text-[#059669]" />
           </div>
-          <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-3xl font-bold text-[#25243A] font-mono tracking-tight">{total_records}</div>
+          <div className="text-xs text-[#77758F] mt-1 font-medium">Total Feedback Records</div>
+          <div className="mt-3 pt-3 border-t border-[rgba(115,87,246,0.08)] text-xs text-[#77758F]">
+            {unique_reviews} unique · {duplicate_records_count} duplicates
+          </div>
+        </Card>
+
+        <Card className="p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] flex items-center justify-center">
+              <CopyCheck className="w-5 h-5 text-[#477DFF]" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold text-[#25243A] font-mono tracking-tight">
             {unique_review_category_combos}
           </div>
-          <div className="text-xs text-slate-500 mt-2">
-            Independent review-category pairs
+          <div className="text-xs text-[#77758F] mt-1 font-medium">Unique Review-Category Pairs</div>
+          <div className="mt-3 pt-3 border-t border-[rgba(115,87,246,0.08)] text-xs text-[#77758F]">
+            Independent combinations
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Priority Issues</span>
-            <AlertTriangle className="w-4 h-4 text-amber-500" />
+        <Card className="p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#FFF1F2] flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-[#E11D48]" />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-3xl font-bold text-[#25243A] font-mono tracking-tight">
             {high_priority_issues.length}
           </div>
-          <div className="text-xs text-slate-500 mt-2 flex items-center justify-between">
-            <span>Ranked by heuristic urgency</span>
+          <div className="text-xs text-[#77758F] mt-1 font-medium">Priority Issues</div>
+          <div className="mt-3 pt-3 border-t border-[rgba(115,87,246,0.08)] flex items-center justify-between">
+            <span className="text-xs text-[#77758F]">Heuristic ranked</span>
             <button
               onClick={onNavigateToIssues}
-              className="text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center gap-0.5"
+              className="text-xs text-[#7357F6] font-medium hover:underline"
             >
-              View <ArrowRight className="w-3 h-3" />
+              View all
             </button>
           </div>
-        </div>
+        </Card>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between text-slate-400 mb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Action Recommendations</span>
-            <Lightbulb className="w-4 h-4 text-indigo-500" />
+        <Card className="p-6 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-[#FFFBEB] flex items-center justify-center">
+              <Lightbulb className="w-5 h-5 text-[#D97706]" />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-3xl font-bold text-[#25243A] font-mono tracking-tight">
             {recommendations_count}
           </div>
-          <div className="text-xs text-slate-500 mt-2 flex items-center justify-between">
-            <span>Targeting root problem clusters</span>
+          <div className="text-xs text-[#77758F] mt-1 font-medium">Action Recommendations</div>
+          <div className="mt-3 pt-3 border-t border-[rgba(115,87,246,0.08)] flex items-center justify-between">
+            <span className="text-xs text-[#77758F]">Targeting root causes</span>
             <button
               onClick={onNavigateToRecommendations}
-              className="text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center gap-0.5"
+              className="text-xs text-[#7357F6] font-medium hover:underline"
             >
-              Inspect <ArrowRight className="w-3 h-3" />
+              Inspect
             </button>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Category Distribution Bar Chart */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between mb-4">
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Category Distribution</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Observed source category volume</p>
+              <h2 className="text-base font-bold text-[#25243A]">Category Distribution</h2>
+              <p className="text-xs text-[#77758F] mt-0.5">Observed source category volume</p>
             </div>
           </div>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={category_distribution} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(115,87,246,0.08)" />
                 <XAxis
                   dataKey="category"
-                  tick={{ fontSize: 11, fill: '#64748B' }}
+                  tick={{ fontSize: 11, fill: '#77758F' }}
                   interval={0}
                   angle={-15}
                   textAnchor="end"
                 />
-                <YAxis tick={{ fontSize: 11, fill: '#64748B' }} />
+                <YAxis tick={{ fontSize: 11, fill: '#77758F' }} />
                 <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-slate-900 text-white text-xs rounded-lg p-2.5 shadow-lg">
+                        <div className="bg-[#25243A] text-white text-xs rounded-xl p-3 shadow-lg">
                           <div className="font-semibold">{data.category}</div>
-                          <div className="text-slate-300 mt-1">
+                          <div className="text-white/70 mt-1">
                             {data.count} feedback records ({data.percentage}%)
                           </div>
                         </div>
@@ -189,26 +240,24 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     return null;
                   }}
                 />
-                <Bar dataKey="count" fill="#6366F1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="#7357F6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </Card>
 
         {/* Sentiment Distribution Pie Chart */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-2xs">
-          <div className="flex items-center justify-between mb-4">
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900">Sentiment Distribution</h2>
-                <span className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200/60 rounded px-1.5 py-0.5 font-medium">
-                  AI-Inferred
-                </span>
+                <h2 className="text-base font-bold text-[#25243A]">Sentiment Distribution</h2>
+                <Badge variant="violet" size="sm">AI-Inferred</Badge>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">Based on Adaption completions and local baseline</p>
+              <p className="text-xs text-[#77758F] mt-0.5">Based on Adaption completions and local baseline</p>
             </div>
           </div>
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-72 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -217,12 +266,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   nameKey="sentiment"
                   cx="50%"
                   cy="50%"
-                  outerRadius={80}
-                  innerRadius={52}
-                  paddingAngle={3}
+                  outerRadius={90}
+                  innerRadius={56}
+                  paddingAngle={4}
                 >
                   {sentiment_distribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={SENTIMENT_COLORS[entry.sentiment] || '#94A3B8'} />
+                    <Cell key={`cell-${index}`} fill={SENTIMENT_COLORS[entry.sentiment] || '#A8A6BF'} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -230,9 +279,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     if (active && payload && payload.length) {
                       const data = payload[0].payload;
                       return (
-                        <div className="bg-slate-900 text-white text-xs rounded-lg p-2.5 shadow-lg">
+                        <div className="bg-[#25243A] text-white text-xs rounded-xl p-3 shadow-lg">
                           <div className="font-semibold capitalize">{data.sentiment}</div>
-                          <div className="text-slate-300 mt-1">
+                          <div className="text-white/70 mt-1">
                             {data.count} records ({data.percentage}%)
                           </div>
                         </div>
@@ -244,101 +293,98 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600 mt-2">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-[#77758F] mt-4">
             {sentiment_distribution.map((s) => (
-              <div key={s.sentiment} className="flex items-center gap-1.5">
+              <div key={s.sentiment} className="flex items-center gap-2">
                 <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: SENTIMENT_COLORS[s.sentiment] || '#94A3B8' }}
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: SENTIMENT_COLORS[s.sentiment] || '#A8A6BF' }}
                 />
                 <span className="capitalize">{s.sentiment}:</span>
-                <span className="font-mono text-slate-800">{s.count} ({s.percentage}%)</span>
+                <span className="font-mono text-[#25243A]">{s.count} ({s.percentage}%)</span>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Top Recurring Topics & Highest Priority Issues */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Recurring Topics */}
-        <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-2xs">
-          <h2 className="text-base font-bold text-slate-900 mb-1">Most Frequently Reported Topics</h2>
-          <p className="text-xs text-slate-400 mb-4">Extracted key topics across categories</p>
+        <Card className="p-6">
+          <h2 className="text-base font-bold text-[#25243A] mb-1">Most Frequently Reported Topics</h2>
+          <p className="text-xs text-[#77758F] mb-5">Extracted key topics across categories</p>
           <div className="space-y-3">
             {top_topics.map((t, idx) => (
-              <div key={idx} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-slate-400 text-[11px] w-4">{idx + 1}.</span>
-                  <span className="font-medium text-slate-800">{t.topic}</span>
+              <div key={idx} className="flex items-center justify-between text-xs py-2 border-b border-[rgba(115,87,246,0.08)] last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-[#77758F] text-[11px] w-5">{idx + 1}.</span>
+                  <span className="font-medium text-[#25243A]">{t.topic}</span>
                 </div>
-                <span className="font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200/60">
-                  {t.count} mentions
+                <span className="font-mono text-[#77758F] bg-[#F5F4FC] px-2.5 py-1 rounded-lg border border-[rgba(115,87,246,0.12)]">
+                  {t.count}
                 </span>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Highest Priority Issues (Heuristic Ranked) */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200/80 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <h2 className="text-base font-bold text-slate-900">Highest-Priority Issues</h2>
-              <button
-                onClick={onNavigateToIssues}
-                className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
-              >
-                View all prioritization formula details
-              </button>
-            </div>
-            <p className="text-xs text-slate-400 mb-4">
-              Ranked via formula: (Normalized Frequency × 40) + (Severity Weight × 40) + (Evidence Quality × 20)
-            </p>
+        <Card className="lg:col-span-2 p-6">
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="text-base font-bold text-[#25243A]">Highest-Priority Issues</h2>
+            <button
+              onClick={onNavigateToIssues}
+              className="text-xs text-[#7357F6] font-medium hover:underline"
+            >
+              View all prioritization formula details
+            </button>
+          </div>
+          <p className="text-xs text-[#77758F] mb-5">
+            Ranked via formula: (Normalized Frequency × 40) + (Severity Weight × 40) + (Evidence Quality × 20)
+          </p>
 
-            <div className="divide-y divide-slate-100">
-              {high_priority_issues.map((issue) => (
-                <div key={issue.id} className="py-3 flex items-start justify-between gap-4">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="font-semibold text-slate-800">{issue.title}</span>
-                      <span aria-hidden="true" className="text-slate-300">·</span>
-                      <span className="text-slate-500">{issue.category}</span>
+          <div className="space-y-3">
+            {high_priority_issues.map((issue) => (
+              <div key={issue.id} className="p-4 rounded-xl bg-[#F5F4FC] border border-[rgba(115,87,246,0.08)] hover:border-[rgba(115,87,246,0.24)] transition-colors">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 text-xs mb-2">
+                      <span className="font-semibold text-[#25243A]">{issue.title}</span>
+                      <CategoryBadge category={issue.category} />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-1">
+                    <p className="text-xs text-[#77758F] line-clamp-1">
                       Action: {issue.suggested_action}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-xs font-mono font-bold text-indigo-600">
-                      Score: {issue.priority_score}/100
+                    <div className="text-sm font-mono font-bold text-[#7357F6]">
+                      {issue.priority_score}/100
                     </div>
-                    <div className="text-[10px] text-slate-400 mt-0.5 capitalize">
-                      Severity: {issue.severity}
-                    </div>
+                    <SeverityBadge severity={issue.severity} className="mt-1" />
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+          <div className="mt-4 pt-4 border-t border-[rgba(115,87,246,0.08)] flex items-center justify-between text-xs text-[#77758F]">
             <span>Heuristic score for operational triaging</span>
             <span>Unverified fraud allegations require safety review</span>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Recent Feedback Feed */}
-      <div className="bg-white p-6 rounded-xl border border-slate-200/80 shadow-2xs">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Recent Customer Feedback</h2>
-            <p className="text-xs text-slate-400 mt-0.5">Click any review to inspect inferred attributes and evidence</p>
+            <h2 className="text-base font-bold text-[#25243A]">Recent Customer Feedback</h2>
+            <p className="text-xs text-[#77758F] mt-0.5">Click any review to inspect inferred attributes and evidence</p>
           </div>
           <button
             onClick={onNavigateToFeedback}
-            className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+            className="text-xs text-[#7357F6] font-medium flex items-center gap-1 hover:underline"
           >
             <span>Open Feedback Explorer</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -347,33 +393,32 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {recent_feedback.map((item) => (
-            <div
+            <Card
               key={item.id}
+              hover
               onClick={() => onSelectFeedback(item)}
-              className="p-4 rounded-lg border border-slate-200/70 hover:border-indigo-300 hover:bg-slate-50/50 transition-all cursor-pointer flex flex-col justify-between"
+              className="p-4 flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                  <span>{item.category}</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="capitalize">{item.sentiment || 'neutral'}</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="capitalize">{item.severity || 'low'} sev</span>
+                <div className="flex items-center gap-2 text-xs text-[#77758F] mb-3 flex-wrap">
+                  <CategoryBadge category={item.category} />
+                  <SentimentBadge sentiment={item.sentiment || 'neutral'} />
+                  <SeverityBadge severity={item.severity || 'low'} />
                 </div>
-                <p className="text-xs text-slate-800 line-clamp-3 leading-relaxed">
+                <p className="text-sm text-[#25243A] line-clamp-3 leading-relaxed">
                   "{item.review}"
                 </p>
               </div>
-              <div className="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
-                <span className="truncate max-w-[140px]">
+              <div className="mt-4 pt-3 border-t border-[rgba(115,87,246,0.08)] flex justify-between items-center text-[11px] text-[#77758F]">
+                <Badge variant={item.provenance === 'adapted_dataset' ? 'violet' : 'default'} size="sm">
                   {item.provenance === 'adapted_dataset' ? 'Adaption' : 'Baseline'}
-                </span>
-                <span className="text-indigo-600 font-medium hover:underline">Inspect</span>
+                </Badge>
+                <span className="text-[#7357F6] font-medium">Inspect →</span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Sidebar, NavTab } from './components/Sidebar';
 import { Header } from './components/Header';
 import { FeedbackDetailModal } from './components/FeedbackDetailModal';
 import { UploadModal } from './components/UploadModal';
+import { PageLoading } from './components/ui/Loading';
 import { OverviewView } from './views/OverviewView';
 import { FeedbackExplorerView } from './views/FeedbackExplorerView';
 import { AIInsightsView } from './views/AIInsightsView';
@@ -110,7 +111,7 @@ export default function App() {
     : 0;
 
   return (
-    <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#FAF9FF] text-[#25243A] overflow-hidden font-sans">
       {/* Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -143,12 +144,7 @@ export default function App() {
         {/* Scrollable View Container */}
         <main className="flex-1 overflow-y-auto">
           {initialLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center space-y-3">
-                <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-xs text-slate-500">Loading InsightFlow platform data...</p>
-              </div>
-            </div>
+            <PageLoading />
           ) : (
             <>
               {currentTab === 'overview' && (

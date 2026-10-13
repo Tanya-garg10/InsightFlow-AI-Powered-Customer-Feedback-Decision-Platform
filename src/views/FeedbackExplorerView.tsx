@@ -4,16 +4,14 @@ import {
   Filter,
   Download,
   Upload,
-  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-  Sparkles,
-  AlertCircle,
-  ExternalLink,
-  Eye
+  Eye,
+  X
 } from 'lucide-react';
-import { FeedbackItem, SentimentType, SeverityType, ProvenanceType } from '../types';
+import { FeedbackItem } from '../types';
 import { api } from '../services/api';
+import { Card, Badge, CategoryBadge, SentimentBadge, SeverityBadge, Button, Loading } from '../components/ui';
 
 interface FeedbackExplorerViewProps {
   onSelectFeedback: (item: FeedbackItem) => void;
@@ -86,94 +84,79 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
     loadFeedback();
   };
 
-  const getSentimentDot = (s?: string) => {
-    switch (s) {
-      case 'positive':
-        return 'bg-emerald-500 text-emerald-700';
-      case 'negative':
-        return 'bg-rose-500 text-rose-700';
-      case 'mixed':
-        return 'bg-amber-500 text-amber-700';
-      default:
-        return 'bg-slate-400 text-slate-600';
-    }
+  const clearFilters = () => {
+    setLocalSearch('');
+    setSelectedCategory('all');
+    setSelectedSentiment('all');
+    setSelectedSeverity('all');
+    setSelectedProvenance('all');
+    setPage(1);
   };
 
-  const getSeverityStyle = (sev?: string) => {
-    switch (sev) {
-      case 'high':
-        return 'text-rose-700 font-semibold';
-      case 'medium':
-        return 'text-amber-700 font-medium';
-      case 'low':
-        return 'text-emerald-700 font-medium';
-      default:
-        return 'text-slate-400';
-    }
-  };
+  const hasActiveFilters = localSearch || selectedCategory !== 'all' || selectedSentiment !== 'all' || selectedSeverity !== 'all' || selectedProvenance !== 'all';
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6 animate-in fade-in duration-150">
+    <div className="p-8 max-w-7xl mx-auto space-y-6 fade-up">
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Feedback Explorer</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-3xl font-bold text-[#25243A] tracking-tight">Feedback Explorer</h1>
+          <p className="text-sm text-[#77758F] mt-2 max-w-xl">
             Browse, search, and audit all customer feedback records ({total} matching records).
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => api.getReportExport('csv')}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
+        <div className="flex items-center gap-3">
+          <Button variant="secondary" onClick={() => api.getReportExport('csv')}>
+            <Download className="w-4 h-4" />
             <span>Export CSV</span>
-          </button>
-          <button
-            onClick={onOpenUpload}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs"
-          >
-            <Upload className="w-3.5 h-3.5" />
+          </Button>
+          <Button onClick={onOpenUpload}>
+            <Upload className="w-4 h-4" />
             <span>Upload New CSV</span>
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs space-y-3">
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
+      <Card className="p-5 space-y-4">
+        <form onSubmit={handleSearchSubmit} className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#A8A6BF] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               placeholder="Search in review text, evidence, or summary..."
-              className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#7357F6]/20 focus:border-[#7357F6] transition-all"
             />
+            {localSearch && (
+              <button
+                type="button"
+                onClick={() => setLocalSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#A8A6BF] hover:text-[#25243A] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-          >
+          <Button type="submit" variant="secondary">
             Search
-          </button>
+          </Button>
         </form>
 
         {/* Filter selectors */}
-        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs">
-          <div className="flex items-center gap-1.5 text-slate-500">
-            <Filter className="w-3.5 h-3.5" />
-            <span>Filters:</span>
+        <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-[rgba(115,87,246,0.08)]">
+          <div className="flex items-center gap-2 text-xs text-[#77758F]">
+            <Filter className="w-4 h-4" />
+            <span className="font-medium">Filters:</span>
           </div>
 
           {/* Category */}
           <select
             value={selectedCategory}
             onChange={(e) => { setSelectedCategory(e.target.value); setPage(1); }}
-            className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-700 focus:outline-none"
+            className="px-3 py-2 text-sm bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7357F6]/20 text-[#25243A]"
           >
             <option value="all">All Categories</option>
             {categories.map((cat) => (
@@ -185,7 +168,7 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
           <select
             value={selectedSentiment}
             onChange={(e) => { setSelectedSentiment(e.target.value); setPage(1); }}
-            className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-700 focus:outline-none"
+            className="px-3 py-2 text-sm bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7357F6]/20 text-[#25243A]"
           >
             <option value="all">All Sentiments</option>
             <option value="positive">Positive</option>
@@ -198,7 +181,7 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
           <select
             value={selectedSeverity}
             onChange={(e) => { setSelectedSeverity(e.target.value); setPage(1); }}
-            className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-700 focus:outline-none"
+            className="px-3 py-2 text-sm bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7357F6]/20 text-[#25243A]"
           >
             <option value="all">All Severities</option>
             <option value="high">High Severity</option>
@@ -211,7 +194,7 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
           <select
             value={selectedProvenance}
             onChange={(e) => { setSelectedProvenance(e.target.value); setPage(1); }}
-            className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-md text-slate-700 focus:outline-none"
+            className="px-3 py-2 text-sm bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7357F6]/20 text-[#25243A]"
           >
             <option value="all">All Provenance</option>
             <option value="adapted_dataset">Adaption Dataset</option>
@@ -219,12 +202,21 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
             <option value="manual_override">Manual Override</option>
           </select>
 
-          <div className="ml-auto flex items-center gap-2">
-            <span className="text-slate-400">Rows per page:</span>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="px-3 py-2 text-sm text-[#E11D48] hover:bg-[#FFF1F2] rounded-xl transition-colors"
+            >
+              Clear all
+            </button>
+          )}
+
+          <div className="ml-auto flex items-center gap-2 text-xs text-[#77758F]">
+            <span>Rows per page:</span>
             <select
               value={limit}
               onChange={(e) => { setLimit(parseInt(e.target.value)); setPage(1); }}
-              className="px-2 py-1 bg-slate-50 border border-slate-200 rounded-md text-slate-700 focus:outline-none"
+              className="px-2 py-1.5 bg-[#F5F4FC] border border-[rgba(115,87,246,0.12)] rounded-lg focus:outline-none text-[#25243A]"
             >
               <option value="25">25</option>
               <option value="50">50</option>
@@ -232,34 +224,45 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
             </select>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Feedback Table */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-2xs overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                <th className="py-3 px-4 w-16">ID</th>
-                <th className="py-3 px-4 min-w-[320px]">Customer Review</th>
-                <th className="py-3 px-4 min-w-[140px]">Category</th>
-                <th className="py-3 px-4 w-28">Sentiment</th>
-                <th className="py-3 px-4 w-24">Severity</th>
-                <th className="py-3 px-4 min-w-[140px]">Provenance</th>
-                <th className="py-3 px-4 w-20 text-right">Action</th>
+              <tr className="bg-[#F5F4FC] border-b border-[rgba(115,87,246,0.08)] text-[11px] font-semibold text-[#77758F] uppercase tracking-wider">
+                <th className="py-4 px-5 w-20">ID</th>
+                <th className="py-4 px-5 min-w-[340px]">Customer Review</th>
+                <th className="py-4 px-5 min-w-[140px]">Category</th>
+                <th className="py-4 px-5 w-28">Sentiment</th>
+                <th className="py-4 px-5 w-24">Severity</th>
+                <th className="py-4 px-5 min-w-[140px]">Provenance</th>
+                <th className="py-4 px-5 w-20 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 text-xs text-slate-700">
+            <tbody className="divide-y divide-[rgba(115,87,246,0.08)] text-sm text-[#25243A]">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
-                    Loading customer feedback records...
+                  <td colSpan={7} className="py-16 text-center">
+                    <Loading message="Loading customer feedback records..." />
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400">
-                    No feedback matching current filters. Try resetting search or category filter.
+                  <td colSpan={7} className="py-16 text-center text-[#77758F]">
+                    <div className="flex flex-col items-center gap-3">
+                      <Search className="w-8 h-8 text-[#A8A6BF]" />
+                      <p>No feedback matching current filters.</p>
+                      {hasActiveFilters && (
+                        <button
+                          onClick={clearFilters}
+                          className="text-[#7357F6] font-medium hover:underline"
+                        >
+                          Clear filters
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (
@@ -267,50 +270,39 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
                   <tr
                     key={item.id}
                     onClick={() => onSelectFeedback(item)}
-                    className="hover:bg-indigo-50/20 cursor-pointer transition-colors"
+                    className="hover:bg-[#F5F4FC] cursor-pointer transition-colors group"
                   >
-                    <td className="py-3 px-4 font-mono text-[11px] text-slate-400">
+                    <td className="py-4 px-5 font-mono text-[11px] text-[#77758F]">
                       {item.id}
                     </td>
-                    <td className="py-3 px-4 max-w-md">
-                      <p className="line-clamp-2 text-slate-900 leading-relaxed font-sans">
+                    <td className="py-4 px-5 max-w-md">
+                      <p className="line-clamp-2 text-[#25243A] leading-relaxed font-medium">
                         "{item.review}"
                       </p>
                       {item.issue_summary && (
-                        <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-1">
-                          Summary: {item.issue_summary}
+                        <p className="text-xs text-[#77758F] mt-1.5 line-clamp-1">
+                          {item.issue_summary}
                         </p>
                       )}
                     </td>
-                    <td className="py-3 px-4 font-medium text-slate-800">
-                      {item.category}
+                    <td className="py-4 px-5">
+                      <CategoryBadge category={item.category} />
                     </td>
-                    <td className="py-3 px-4 capitalize">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`w-2 h-2 rounded-full ${getSentimentDot(item.sentiment).split(' ')[0]}`} />
-                        <span className={getSentimentDot(item.sentiment).split(' ')[1]}>
-                          {item.sentiment || 'neutral'}
-                        </span>
-                      </div>
+                    <td className="py-4 px-5">
+                      <SentimentBadge sentiment={item.sentiment || 'neutral'} />
                     </td>
-                    <td className="py-3 px-4 capitalize">
-                      <span className={getSeverityStyle(item.severity)}>
-                        {item.severity || 'low'}
-                      </span>
+                    <td className="py-4 px-5">
+                      <SeverityBadge severity={item.severity || 'low'} />
                     </td>
-                    <td className="py-3 px-4 text-slate-500 text-[11px]">
-                      {item.provenance === 'adapted_dataset' ? (
-                        <span className="text-violet-700 font-medium">Adaption Test</span>
-                      ) : item.provenance === 'manual_override' ? (
-                        <span className="text-emerald-700 font-medium">User Override</span>
-                      ) : (
-                        <span className="text-slate-500">Local Baseline</span>
-                      )}
+                    <td className="py-4 px-5 text-xs">
+                      <Badge variant={item.provenance === 'adapted_dataset' ? 'violet' : item.provenance === 'manual_override' ? 'mint' : 'default'} size="sm">
+                        {item.provenance === 'adapted_dataset' ? 'Adaption' : item.provenance === 'manual_override' ? 'Override' : 'Baseline'}
+                      </Badge>
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-4 px-5 text-right">
                       <button
                         onClick={(e) => { e.stopPropagation(); onSelectFeedback(item); }}
-                        className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                        className="p-2 text-[#77758F] hover:text-[#7357F6] hover:bg-[#EEE9FF] rounded-lg transition-colors"
                         title="View Full Analysis"
                       >
                         <Eye className="w-4 h-4" />
@@ -324,38 +316,34 @@ export const FeedbackExplorerView: React.FC<FeedbackExplorerViewProps> = ({
         </div>
 
         {/* Pagination Bar */}
-        <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+        <div className="p-4 border-t border-[rgba(115,87,246,0.08)] flex items-center justify-between text-xs text-[#77758F]">
           <div>
-            Showing <span className="font-mono font-medium text-slate-800">{(page - 1) * limit + 1}</span> to{' '}
-            <span className="font-mono font-medium text-slate-800">{Math.min(page * limit, total)}</span> of{' '}
-            <span className="font-mono font-medium text-slate-800">{total}</span> records
+            Showing <span className="font-mono font-medium text-[#25243A]">{(page - 1) * limit + 1}</span> to{' '}
+            <span className="font-mono font-medium text-[#25243A]">{Math.min(page * limit, total)}</span> of{' '}
+            <span className="font-mono font-medium text-[#25243A]">{total}</span> records
           </div>
 
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className={`p-1.5 rounded-md border border-slate-200 transition-colors ${
-                page <= 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'
-              }`}
             >
               <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-slate-600 font-mono">
+            </Button>
+            <span className="text-[#25243A] font-mono px-2">
               Page {page} of {totalPages || 1}
             </span>
-            <button
+            <Button
+              variant="ghost"
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className={`p-1.5 rounded-md border border-slate-200 transition-colors ${
-                page >= totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'
-              }`}
             >
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
