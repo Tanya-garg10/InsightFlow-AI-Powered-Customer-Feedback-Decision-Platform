@@ -113,33 +113,37 @@ export default function App() {
   return (
     <div className="flex h-screen bg-[#FAF9FF] text-[#25243A] overflow-hidden font-sans">
       {/* Sidebar Navigation */}
-      <Sidebar
-        currentTab={currentTab}
-        onSelectTab={setCurrentTab}
-        feedbackCount={totalFeedbackCount}
-        adaptedCoverage={adaptedCoverage}
-      />
+      <div className="print-sidebar">
+        <Sidebar
+          currentTab={currentTab}
+          onSelectTab={setCurrentTab}
+          feedbackCount={totalFeedbackCount}
+          adaptedCoverage={adaptedCoverage}
+        />
+      </div>
 
       {/* Main App Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden print-report-area">
         {/* Top Header */}
-        <Header
-          searchQuery={searchQuery}
-          onSearchChange={(q) => {
-            setSearchQuery(q);
-            if (q && currentTab !== 'feedback') {
-              setCurrentTab('feedback');
-            }
-          }}
-          datasets={datasets}
-          selectedDatasetId={selectedDatasetId}
-          onSelectDataset={setSelectedDatasetId}
-          onOpenUpload={() => setIsUploadOpen(true)}
-          onRunAnalysis={handleRunAnalysis}
-          isAnalyzing={isAnalyzing}
-          onResetDemo={handleResetDemo}
-          feedbackTotal={totalFeedbackCount}
-        />
+        <div className="print-header">
+          <Header
+            searchQuery={searchQuery}
+            onSearchChange={(q) => {
+              setSearchQuery(q);
+              if (q && currentTab !== 'feedback') {
+                setCurrentTab('feedback');
+              }
+            }}
+            datasets={datasets}
+            selectedDatasetId={selectedDatasetId}
+            onSelectDataset={setSelectedDatasetId}
+            onOpenUpload={() => setIsUploadOpen(true)}
+            onRunAnalysis={handleRunAnalysis}
+            isAnalyzing={isAnalyzing}
+            onResetDemo={handleResetDemo}
+            feedbackTotal={totalFeedbackCount}
+          />
+        </div>
 
         {/* Scrollable View Container */}
         <main className="flex-1 overflow-y-auto">

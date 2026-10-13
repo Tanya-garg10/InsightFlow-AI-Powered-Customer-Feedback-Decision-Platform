@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ─── InsightFlow Design Tokens ───────────────────────────────────────── */
 :root {
@@ -196,8 +198,52 @@
 
 /* ─── Print ──────────────────────────────────────────────────────────── */
 @media print {
+  /* Hide non-report UI */
   .no-print { display: none !important; }
+  .print-sidebar { display: none !important; }
+  .print-header { display: none !important; }
   .print-only { display: block !important; }
-  body { background: white !important; color: black !important; }
-  .if-card, .if-card-hover { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+
+  /* Reset body/html for full print */
+  html, body {
+    background: white !important;
+    color: black !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Make the root flex layout flat so report takes full width */
+  #root > div {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Main content area: reset flex/overflow so full report prints */
+  main {
+    overflow: visible !important;
+    height: auto !important;
+    flex: none !important;
+  }
+
+  /* Report container: full width, no clipping */
+  .print-report-area {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Cards: no shadows, clean borders */
+  .if-card, .if-card-hover {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+    break-inside: avoid;
+  }
+
+  /* Page breaks */
+  h3 { break-after: avoid; }
+  table { break-inside: avoid; }
+
+  /* Ensure colors print */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
